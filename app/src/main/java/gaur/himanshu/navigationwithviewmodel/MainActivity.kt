@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -39,11 +39,19 @@ class MainActivity : ComponentActivity() {
 
                 val navHostController = rememberNavController()
 
-                DisposableEffect(navHostController) {
-                    navigator.setController(navHostController)
-                    onDispose {
-                        navigator.clear()
-                    }
+                LaunchedEffect(Unit) {
+                    navigator.navigationEvents
+                        .collect { navigationEvent ->
+                            when (navigationEvent) {
+                                is NavigationEvent.Navigate -> {
+                                    navHostController.navigate(navigationEvent.route)
+                                }
+
+                                NavigationEvent.PopBackStack -> {
+                                    navHostController.popBackStack()
+                                }
+                            }
+                        }
                 }
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -80,6 +88,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        navigator.clear()
+        super.onDestroy()
     }
 }
 

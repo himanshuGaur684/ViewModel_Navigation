@@ -3,15 +3,12 @@ package gaur.himanshu.navigationwithviewmodel
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
-import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavType
-import androidx.navigation.toRoute
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.reflect.KClass
-import kotlin.reflect.typeOf
 
 sealed class Dest {
 

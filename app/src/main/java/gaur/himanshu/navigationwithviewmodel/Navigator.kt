@@ -1,36 +1,50 @@
 package gaur.himanshu.navigationwithviewmodel
 
-import androidx.navigation.NavHostController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+sealed class NavigationEvent {
+    data class Navigate(val route: Any) : NavigationEvent()
+    data object PopBackStack : NavigationEvent()
+}
 
 interface Navigator {
 
-    fun setController(navHostController: NavHostController)
+    val navigationEvents: MutableSharedFlow<NavigationEvent>
 
     fun navigate(route: Any)
 
     fun popBackStack()
 
     fun clear()
+
 }
 
 class NavigatorImpl @Inject constructor() : Navigator {
 
-    private var navHostController: NavHostController? = null
+    val scope = CoroutineScope(Dispatchers.IO)
 
-    override fun setController(navHostController: NavHostController) {
-        this.navHostController = navHostController
-    }
+    override val navigationEvents: MutableSharedFlow<NavigationEvent> = MutableSharedFlow<NavigationEvent>()
+
 
     override fun navigate(route: Any) {
-        navHostController?.navigate(route)
+        scope.launch {
+            navigationEvents.emit(NavigationEvent.Navigate(route))
+        }
     }
 
     override fun popBackStack() {
-        navHostController?.popBackStack()
+        scope.launch {
+            navigationEvents.emit(NavigationEvent.PopBackStack)
+        }
     }
 
     override fun clear() {
-        this.navHostController = null
+        scope.cancel()
     }
+
 }
