@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.dagger)
     kotlin("kapt")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -65,4 +66,5 @@ dependencies {
 
     implementation(libs.kotlinx.serialization)
     implementation(libs.hilt.compose.navigation)
+    implementation(libs.navigation.compose)
 }
